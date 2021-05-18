@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { ViewChild, ElementRef } from '@angular/core';
+
+declare let google: any;
 
 @Component({
   selector: 'app-home',
@@ -7,6 +10,131 @@ import { Component } from '@angular/core';
 })
 export class HomePage {
 
-  constructor() {}
+  map: any;
+
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef;
+
+  file = '../assets/pac_202104.json';
+  infoWindows: any = [];
+  markers: any = [
+    {
+      title: 'Algo 1',
+      latitude: '-31.6433086',
+      longitude: '-60.7058219'
+    },
+    {
+      title: 'Algo 2',
+      latitude: '-31.6209716',
+      longitude: '-60.6865348'
+    }
+  ];
+
+  constructor() {
+  }
+
+  ionViewDidEnter() {
+    this.showMap();
+    const geocoder = new google.maps.Geocoder();
+
+    (document.getElementById('submit') as HTMLButtonElement)
+      .addEventListener('click', () => {
+        this.geocodeAddress(geocoder, this.map);
+      }
+      );
+  }
+
+  addMarkersToMap(markers) {
+    for (const marker of markers) {
+
+      const svgMarker = {
+        // eslint-disable-next-line max-len
+        path: 'M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z',
+        fillColor: '#42d77d',
+        fillOpacity: 1,
+        strokeWeight: 0,
+        rotation: 0,
+        scale: 2,
+        anchor: new google.maps.Point(15, 30),
+      };
+      const position = new google.maps.LatLng(marker.latitude, marker.longitude);
+      const mapMarker = new google.maps.Marker({
+        position,
+        title: marker.title,
+        latitude: marker.latitude,
+        longitude: marker.longitude,
+        icon: svgMarker
+      });
+
+      mapMarker.setMap(this.map);
+      this.addInfoWindowToMarker(mapMarker);
+    }
+  }
+
+  addInfoWindowToMarker(marker) {
+    const infoWindowContent =
+      `<div class="popup">
+      <h2 class="titulo"> ${marker.title} </h2>
+      <p>Latitude: ${marker.latitude}</p>
+      <p>Logitude: ${marker.longitude}</p>
+    </div>`;
+
+    const infoWindow = new google.maps.InfoWindow({
+      content: infoWindowContent,
+    });
+
+    marker.addListener('click', () => {
+      // this.closeAllInfoWindows();
+      infoWindow.open(this.map, marker);
+    });
+    this.infoWindows.push(infoWindow);
+  }
+
+  closeAllInfoWindows() {
+    for (const window of this.infoWindows) {
+      window.close();
+    }
+  }
+
+  // async loadPoints(file: string) {
+  //   const puntos = await fetch(file)
+  //     .then(res => res.json())
+  //     .then(res => res.features)
+  //     .catch(err => console.log);
+
+  //   return puntos;
+
+  // }
+
+
+  showMap() {
+    const location = new google.maps.LatLng(-31.635150549331115, -60.71562051773071);
+    const options = {
+      center: location,
+      zoom: 14,
+      disableDefaultUI: true
+    };
+    this.map = new google.maps.Map(this.mapRef.nativeElement, options);
+    this.addMarkersToMap(this.markers);
+  }
+
+  geocodeAddress(geocoder, resultsMap) {
+    const address = (document.getElementById('address') as HTMLInputElement).value;
+    geocoder.geocode({ address }, (results, status) => {
+      if (status === 'OK') {
+        resultsMap.setCenter(results[0].geometry.location);
+        new google.maps.Marker({
+          map: resultsMap,
+          position: results[0].geometry.location,
+        });
+      } else {
+        alert('Debes ingresar una dirección: ' + status);
+      }
+    });
+  }
+
+
 
 }
+
+

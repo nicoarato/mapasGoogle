@@ -1,5 +1,7 @@
 {
   "name": "mapasGoogle",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular"
 }
