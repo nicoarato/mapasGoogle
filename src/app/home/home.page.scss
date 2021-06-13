@@ -5,7 +5,7 @@
 
 #floating-panel {
     position: absolute;
-    width: 500px;
+    width: 570px;
     top: 5px;
     left: 10%;
     z-index: 5;
@@ -15,6 +15,12 @@
     font-size: small;
     display: flex;
     justify-content: space-between;
+}
+
+@media only screen and (max-width: 768px) {
+    #floating-panel {
+        width: 75%;
+    }
 }
 
 #address {
