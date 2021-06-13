@@ -1,3 +1,4 @@
+/* eslint-disable space-before-function-paren */
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Component } from '@angular/core';
 import { ViewChild, ElementRef } from '@angular/core';
@@ -80,9 +81,16 @@ export class HomePage {
             };
             const position = new google.maps.LatLng(marker.coordinates[1], marker.coordinates[0]);
             const infowindow = new google.maps.InfoWindow();
+            const formatterPeso = new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0
+            });
+            // const recaudacion = formatterPeso.format(parseInt(punto.properties.promedio_ventas_3mes));
+            const recaudacion = formatterPeso.format(marker.promedio_ventas_3mes);
             const labelMarker =
                 `<div class="popup">
-                <p class="titulo"> <strong>${marker.red}/${marker.subagente} - $${marker.promedio_ventas_3mes}</strong></p>
+                <p class="titulo"> <strong>${marker.red}/${marker.subagente} - ${recaudacion}</strong></p>
                 </div>`;
 
 
