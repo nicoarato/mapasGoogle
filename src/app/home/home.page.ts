@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Component } from '@angular/core';
 import { ViewChild, ElementRef } from '@angular/core';
 
@@ -17,17 +18,36 @@ export class HomePage {
 
     file = '../assets/pac_202104.json';
     infoWindows: any = [];
+
     markers: any = [
         {
-            title: 'Algo 1',
-            latitude: '-31.6433086',
-            longitude: '-60.7058219'
+            red: 6001,
+            subagente: 0,
+            permiso: 6001,
+            titular: 'AGENCIA MINES S.R.L.',
+            promedio_ventas_3mes: 1201510,
+            estado_comercial: 'activo',
+            coordinates: [-60.704666, -31.640020]
         },
         {
-            title: 'Algo 2',
-            latitude: '-31.6209716',
-            longitude: '-60.6865348'
+            red: 6001,
+            subagente: 2,
+            permiso: 56922,
+            titular: 'LANCILLA, MIGUEL ALEJANDROdd',
+            promedio_ventas_3mes: 252493,
+            estado_comercial: 'activo',
+            coordinates: [-60.7058219, -31.6433086]
+        },
+        {
+            red: 6001,
+            subagente: 3,
+            permiso: 56850,
+            titular: 'CASLINI, .DANIEL C�SAR',
+            promedio_ventas_3mes: 247792,
+            estado_comercial: 'activo',
+            coordinates: [-60.6865348, -31.6209716]
         }
+
     ];
 
     constructor() {
@@ -50,41 +70,50 @@ export class HomePage {
             const svgMarker = {
                 // eslint-disable-next-line max-len
                 path: 'M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z',
-                fillColor: '#42d77d',
+                // fillColor: '#42d77d',
+                fillColor: 'black',
                 fillOpacity: 1,
                 strokeWeight: 0,
                 rotation: 0,
                 scale: 2,
                 anchor: new google.maps.Point(15, 30),
             };
-            const position = new google.maps.LatLng(marker.latitude, marker.longitude);
+            const position = new google.maps.LatLng(marker.coordinates[1], marker.coordinates[0]);
+            const infowindow = new google.maps.InfoWindow();
+            const labelMarker =
+                `<div class="popup">
+                <p class="titulo"> <strong>${marker.red}/${marker.subagente} - $${marker.promedio_ventas_3mes}</strong></p>
+                </div>`;
+
+
             const mapMarker = new google.maps.Marker({
                 position,
-                title: marker.title,
-                latitude: marker.latitude,
-                longitude: marker.longitude,
+                map: this.map,
+                animation: google.maps.Animation.DROP,
+                title: `${marker.titular}`,
                 icon: svgMarker
             });
 
-            mapMarker.setMap(this.map);
-            this.addInfoWindowToMarker(mapMarker);
+            google.maps.event.addListener(mapMarker, 'click', function (e) {
+                infowindow.setContent(labelMarker);
+                infowindow.open(this.map, mapMarker);
+            });
         }
     }
 
     addInfoWindowToMarker(marker) {
-        const infoWindowContent =
+        const labelMarker =
             `<div class="popup">
-      <h2 class="titulo"> ${marker.title} </h2>
-      <p>Latitude: ${marker.latitude}</p>
-      <p>Logitude: ${marker.longitude}</p>
-    </div>`;
+              <h2 class="titulo"> ${marker.red}/${marker.subagente} </h2>
+                <p>Latitude: ${marker.coordinates[1]}</p>
+                <p>Logitude: ${marker.coordinates[0]}</p>
+            </div>`;
 
         const infoWindow = new google.maps.InfoWindow({
-            content: infoWindowContent,
+            content: labelMarker,
         });
 
         marker.addListener('click', () => {
-            // this.closeAllInfoWindows();
             infoWindow.open(this.map, marker);
         });
         this.infoWindows.push(infoWindow);
