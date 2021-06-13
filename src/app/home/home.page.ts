@@ -194,12 +194,18 @@ export class HomePage {
     geocodeAddress(geocoder, resultsMap) {
         const address = (document.getElementById('address') as HTMLInputElement).value;
         geocoder.geocode({ address }, (results, status) => {
+            const infowindow = new google.maps.InfoWindow();
+            const labelMarker = `<p><strong>Dom propuesto</strong></p>`;
             if (status === 'OK') {
                 resultsMap.setCenter(results[0].geometry.location);
-                new google.maps.Marker({
+                const mapMarker = new google.maps.Marker({
                     map: resultsMap,
                     position: results[0].geometry.location,
                     draggable: true
+                });
+                google.maps.event.addListener(mapMarker, 'click', function (e) {
+                    infowindow.setContent(labelMarker);
+                    infowindow.open(this.map, mapMarker);
                 });
             } else {
                 alert('Debes ingresar una dirección: ' + status);
