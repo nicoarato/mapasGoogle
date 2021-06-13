@@ -20,7 +20,7 @@ export class HomePage {
     file = '../assets/pac_202104.json';
     infoWindows: any = [];
 
-    markers: any = [
+    markers2: any = [
         {
             red: 6001,
             subagente: 0,
@@ -51,6 +51,70 @@ export class HomePage {
 
     ];
 
+    markers: any = [
+
+        {
+            type: 'Feature',
+            properties: {
+                red: 6001,
+                subagente: 0,
+                permiso: 6001,
+                titular: 'AGENCIA MINES S.R.L.',
+                promedio_ventas_3mes: 1201510,
+                estado_comercial: 'activo'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [-60.704666, -31.640020]
+            }
+        },
+        {
+            type: 'Feature',
+            properties: {
+                red: 6001,
+                subagente: 2,
+                permiso: 56922,
+                titular: 'LANCILLA, MIGUEL ALEJANDROdd',
+                promedio_ventas_3mes: 252493,
+                estado_comercial: 'activo'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [-60.7058219, -31.6433086]
+            }
+        },
+        {
+            type: 'Feature',
+            properties: {
+                red: 6001,
+                subagente: 3,
+                permiso: 56850,
+                titular: 'CASLINI, .DANIEL C�SAR',
+                promedio_ventas_3mes: 247792,
+                estado_comercial: 'activo'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [-60.6865348, -31.6209716]
+            }
+        },
+        {
+            type: 'Feature',
+            properties: {
+                red: 6001,
+                subagente: 4,
+                permiso: 6078,
+                titular: 'PACHIAROTTA MARIA ROSA  ',
+                promedio_ventas_3mes: 199735,
+                estado_comercial: 'activo'
+            },
+            geometry: {
+                type: 'Point',
+                coordinates: [-60.7207679, -31.6404438]
+            }
+        }
+    ];
+
     constructor() {
     }
 
@@ -79,7 +143,7 @@ export class HomePage {
                 scale: 2,
                 anchor: new google.maps.Point(15, 30),
             };
-            const position = new google.maps.LatLng(marker.coordinates[1], marker.coordinates[0]);
+            const position = new google.maps.LatLng(marker.geometry.coordinates[1], marker.geometry.coordinates[0]);
             const infowindow = new google.maps.InfoWindow();
             const formatterPeso = new Intl.NumberFormat('es-CO', {
                 style: 'currency',
@@ -87,10 +151,10 @@ export class HomePage {
                 minimumFractionDigits: 0
             });
             // const recaudacion = formatterPeso.format(parseInt(punto.properties.promedio_ventas_3mes));
-            const recaudacion = formatterPeso.format(marker.promedio_ventas_3mes);
+            const recaudacion = formatterPeso.format(marker.properties.promedio_ventas_3mes);
             const labelMarker =
                 `<div class="popup">
-                <p class="titulo"> <strong>${marker.red}/${marker.subagente} - ${recaudacion}</strong></p>
+                <p class="titulo"> <strong>${marker.properties.red}/${marker.properties.subagente} - ${recaudacion}</strong></p>
                 </div>`;
 
 
@@ -98,7 +162,7 @@ export class HomePage {
                 position,
                 map: this.map,
                 animation: google.maps.Animation.DROP,
-                title: `${marker.titular}`,
+                title: `${marker.properties.titular}`,
                 icon: svgMarker
             });
 
@@ -135,6 +199,7 @@ export class HomePage {
                 new google.maps.Marker({
                     map: resultsMap,
                     position: results[0].geometry.location,
+                    draggable: true
                 });
             } else {
                 alert('Debes ingresar una dirección: ' + status);
