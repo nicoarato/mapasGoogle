@@ -109,37 +109,19 @@ export class HomePage {
         }
     }
 
-    addInfoWindowToMarker(marker) {
-        const labelMarker =
-            `<div class="popup">
-              <h2 class="titulo"> ${marker.red}/${marker.subagente} </h2>
-                <p>Latitude: ${marker.coordinates[1]}</p>
-                <p>Logitude: ${marker.coordinates[0]}</p>
-            </div>`;
-
-        const infoWindow = new google.maps.InfoWindow({
-            content: labelMarker,
-        });
-
-        marker.addListener('click', () => {
-            infoWindow.open(this.map, marker);
-        });
-        this.infoWindows.push(infoWindow);
-    }
-
-    closeAllInfoWindows() {
-        for (const window of this.infoWindows) {
-            window.close();
-        }
-    }
-
-
     showMap() {
         const location = new google.maps.LatLng(-31.635150549331115, -60.71562051773071);
         const options = {
             center: location,
             zoom: 14,
-            disableDefaultUI: true
+            // disableDefaultUI: true
+            // zoomControl: boolean,
+            mapTypeControl: false,
+            // scaleControl: false,
+            // streetViewControl: false,
+            // rotateControl: false
+            // fullscreenControl: false
+
         };
         this.map = new google.maps.Map(this.mapRef.nativeElement, options);
         this.addMarkersToMap(this.markers);
