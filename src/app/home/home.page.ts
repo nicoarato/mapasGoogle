@@ -19,37 +19,7 @@ export class HomePage {
 
     file = '../assets/pac_202104.json';
     infoWindows: any = [];
-
-    markers2: any = [
-        {
-            red: 6001,
-            subagente: 0,
-            permiso: 6001,
-            titular: 'AGENCIA MINES S.R.L.',
-            promedio_ventas_3mes: 1201510,
-            estado_comercial: 'activo',
-            coordinates: [-60.704666, -31.640020]
-        },
-        {
-            red: 6001,
-            subagente: 2,
-            permiso: 56922,
-            titular: 'LANCILLA, MIGUEL ALEJANDROdd',
-            promedio_ventas_3mes: 252493,
-            estado_comercial: 'activo',
-            coordinates: [-60.7058219, -31.6433086]
-        },
-        {
-            red: 6001,
-            subagente: 3,
-            permiso: 56850,
-            titular: 'CASLINI, .DANIEL C�SAR',
-            promedio_ventas_3mes: 247792,
-            estado_comercial: 'activo',
-            coordinates: [-60.6865348, -31.6209716]
-        }
-
-    ];
+    markers1 = [];
 
     markers: any = [
 
@@ -116,6 +86,7 @@ export class HomePage {
     ];
 
     constructor() {
+        this.cargarArchivo();
     }
 
     ionViewDidEnter() {
@@ -161,9 +132,12 @@ export class HomePage {
             const mapMarker = new google.maps.Marker({
                 position,
                 map: this.map,
-                animation: google.maps.Animation.DROP,
+                // animation: google.maps.Animation.DROP,
+                // animation: google.maps.Animation.DROP,
+                draggable: true,
                 title: `${marker.properties.titular}`,
-                icon: svgMarker
+                // icon: svgMarker
+                
             });
 
             google.maps.event.addListener(mapMarker, 'click', function (e) {
@@ -173,7 +147,7 @@ export class HomePage {
         }
     }
 
-    showMap() {
+    async showMap() {
         const location = new google.maps.LatLng(-31.635150549331115, -60.71562051773071);
         const options = {
             center: location,
@@ -188,6 +162,9 @@ export class HomePage {
 
         };
         this.map = new google.maps.Map(this.mapRef.nativeElement, options);
+        console.log('Agregando');
+        console.log(this.markers.length)
+        console.log(this.markers);
         this.addMarkersToMap(this.markers);
     }
 
@@ -213,6 +190,14 @@ export class HomePage {
         });
     }
 
+   async cargarArchivo() {
+       let marcadores = await fetch(this.file)
+                            .then(response => response.json())
+                            .catch(error => console.log(error));
+
+        this.markers = marcadores.features;
+
+    }
 
 
 }
