@@ -17,11 +17,12 @@ export class HomePage {
     // eslint-disable-next-line @typescript-eslint/member-ordering
     @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef;
 
-    file = '../assets/pac_202104.json';
+    // file = '../assets/pac_202104.json';
+    file = '../assets/geojson2021-05.json';
     infoWindows: any = [];
-    markers1 = [];
+    markers = [];
 
-    markers: any = [
+    markers1: any = [
 
         {
             type: 'Feature',
@@ -86,7 +87,7 @@ export class HomePage {
     ];
 
     constructor() {
-        this.cargarArchivo();
+
     }
 
     ionViewDidEnter() {
@@ -103,17 +104,19 @@ export class HomePage {
     addMarkersToMap(markers) {
         for (const marker of markers) {
 
-            const svgMarker = {
-                // eslint-disable-next-line max-len
-                path: 'M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z',
-                // fillColor: '#42d77d',
-                fillColor: 'black',
-                fillOpacity: 1,
-                strokeWeight: 0,
-                rotation: 0,
-                scale: 2,
-                anchor: new google.maps.Point(15, 30),
-            };
+            // const svgMarker = {
+            //     // eslint-disable-next-line max-len
+            // eslint-disable-next-line max-len
+            //     path: 'M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z',
+            //     // fillColor: '#42d77d',
+            //     fillColor: 'black',
+            //     fillOpacity: 1,
+            //     strokeWeight: 0,
+            //     rotation: 0,
+            //     scale: 2,
+            //     anchor: new google.maps.Point(15, 30),
+            // };
+
             const position = new google.maps.LatLng(marker.geometry.coordinates[1], marker.geometry.coordinates[0]);
             const infowindow = new google.maps.InfoWindow();
             const formatterPeso = new Intl.NumberFormat('es-CO', {
@@ -124,20 +127,23 @@ export class HomePage {
             // const recaudacion = formatterPeso.format(parseInt(punto.properties.promedio_ventas_3mes));
             const recaudacion = formatterPeso.format(marker.properties.promedio_ventas_3mes);
             const labelMarker =
-                `<div class="popup">
-                <p class="titulo"> <strong>${marker.properties.red}/${marker.properties.subagente} - ${recaudacion}</strong></p>
+                `<div class='popup'>
+                <p class='titulo'> <strong>${marker.properties.red}/${marker.properties.subagente} - ${recaudacion}</strong></p>
                 </div>`;
 
 
             const mapMarker = new google.maps.Marker({
                 position,
                 map: this.map,
+                // collisionBehavior:
+                //     google.maps.CollisionBehavior.OPTIONAL_AND_HIDES_LOWER_PRIORITY,
                 // animation: google.maps.Animation.DROP,
                 // animation: google.maps.Animation.DROP,
-                draggable: true,
+                // draggable: true,
                 title: `${marker.properties.titular}`,
                 // icon: svgMarker
-                
+
+
             });
 
             google.maps.event.addListener(mapMarker, 'click', function (e) {
@@ -150,6 +156,7 @@ export class HomePage {
     async showMap() {
         const location = new google.maps.LatLng(-31.635150549331115, -60.71562051773071);
         const options = {
+            visibility: 'off',
             center: location,
             zoom: 14,
             // disableDefaultUI: true
@@ -159,13 +166,19 @@ export class HomePage {
             // streetViewControl: false,
             // rotateControl: false
             // fullscreenControl: false
+            // ---------------------------
+            mapTypeControlOptions: {
+                mapTypeIds: ['roadmap', 'satellite', 'hybrid', 'terrain'],
+            },
 
         };
         this.map = new google.maps.Map(this.mapRef.nativeElement, options);
         console.log('Agregando');
-        console.log(this.markers.length)
-        console.log(this.markers);
+        this.markers = await this.cargarArchivo(this.file);
+        // console.log(this.markers.length);
+        // console.log(this.markers);
         this.addMarkersToMap(this.markers);
+
     }
 
     geocodeAddress(geocoder, resultsMap) {
@@ -175,10 +188,23 @@ export class HomePage {
             const labelMarker = `<p><strong>Dom propuesto</strong></p>`;
             if (status === 'OK') {
                 resultsMap.setCenter(results[0].geometry.location);
+                const svgMarker = {
+                    // eslint-disable-next-line max-len
+                    path: 'M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z',
+                    fillColor: 'black',
+                    fillOpacity: 0.9,
+                    strokeWeight: 0.5,
+                    rotation: 0,
+                    scale: 2,
+                    anchor: new google.maps.Point(15, 30),
+                };
+
                 const mapMarker = new google.maps.Marker({
                     map: resultsMap,
                     position: results[0].geometry.location,
-                    draggable: true
+                    draggable: true,
+                    icon: svgMarker
+
                 });
                 google.maps.event.addListener(mapMarker, 'click', function (e) {
                     infowindow.setContent(labelMarker);
@@ -190,12 +216,14 @@ export class HomePage {
         });
     }
 
-   async cargarArchivo() {
-       let marcadores = await fetch(this.file)
-                            .then(response => response.json())
-                            .catch(error => console.log(error));
-
-        this.markers = marcadores.features;
+    async cargarArchivo(file) {
+        const marcadores = await fetch(file)
+            .then(response => response.json())
+            .catch(error => {
+                console.log(error);
+            });
+        // console.log(marcadores.features);
+        return marcadores.features;
 
     }
 
