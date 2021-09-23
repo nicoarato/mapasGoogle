@@ -18,7 +18,7 @@ export class HomePage {
     @ViewChild('map', { read: ElementRef, static: false }) mapRef: ElementRef;
 
     // file = '../assets/pac_202104.json';
-    file = '../assets/geojson2021-05.json';
+    file = '../assets/geojson202108.json';
     infoWindows: any = [];
     markers = [];
 
@@ -95,27 +95,17 @@ export class HomePage {
         const geocoder = new google.maps.Geocoder();
 
         (document.getElementById('submit') as HTMLButtonElement)
-            .addEventListener('click', () => {
-                this.geocodeAddress(geocoder, this.map);
-            }
-            );
+            .addEventListener('click', () => { this.geocodeAddress(geocoder, this.map); });
+
+
+        (document.getElementById('address') as HTMLButtonElement)
+            .addEventListener('keyup', (event) => {
+                if (event.key === 'Enter') { document.getElementById('submit').click(); }
+            });
     }
 
     addMarkersToMap(markers) {
         for (const marker of markers) {
-
-            // const svgMarker = {
-            //     // eslint-disable-next-line max-len
-            // eslint-disable-next-line max-len
-            //     path: 'M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z',
-            //     // fillColor: '#42d77d',
-            //     fillColor: 'black',
-            //     fillOpacity: 1,
-            //     strokeWeight: 0,
-            //     rotation: 0,
-            //     scale: 2,
-            //     anchor: new google.maps.Point(15, 30),
-            // };
 
             const position = new google.maps.LatLng(marker.geometry.coordinates[1], marker.geometry.coordinates[0]);
             const infowindow = new google.maps.InfoWindow();
@@ -149,6 +139,10 @@ export class HomePage {
             google.maps.event.addListener(mapMarker, 'click', function (e) {
                 infowindow.setContent(labelMarker);
                 infowindow.open(this.map, mapMarker);
+            });
+
+            google.maps.event.addListener(mapMarker, 'contextmenu', function (e) {
+                infowindow.close(this.map, mapMarker);
             });
         }
     }
@@ -203,15 +197,22 @@ export class HomePage {
                     map: resultsMap,
                     position: results[0].geometry.location,
                     draggable: true,
-                    icon: svgMarker
+                    icon: svgMarker,
+                    animation: google.maps.Animation.DROP,
 
                 });
                 google.maps.event.addListener(mapMarker, 'click', function (e) {
                     infowindow.setContent(labelMarker);
                     infowindow.open(this.map, mapMarker);
                 });
+
+                google.maps.event.addListener(mapMarker, 'contextmenu', function (e) {
+                    infowindow.close(this.map, mapMarker);
+                });
+
             } else {
-                alert('Debes ingresar una dirección: ' + status);
+                // alert('Debes ingresar una dirección: ' + status);
+                return false;
             }
         });
     }
